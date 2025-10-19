@@ -1,0 +1,22 @@
+---
+name: "alert_history"
+runner_type: "python-script"
+description: "Post message to slack."
+enabled: true
+entry_point: "alert_history.py"
+parameters:
+    script:
+        type: "string"
+        description: "script"
+        required: true
+        position: 0
+    log_id:
+        type: "number"
+        description: "log_id"
+        required: true
+        position: 1
+    caution:
+        type: "string"
+        description: "caution"
+        required: true
+        position: 2

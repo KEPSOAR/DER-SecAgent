@@ -1,0 +1,17 @@
+---
+    name: "agent_script_web_hook"                      # required
+    pack: "kepsoar"                       # optional
+    description: "agent script web hook"       # optional
+    enabled: true                          # required
+
+    trigger:                               # required
+        type: "core.st2.webhook"
+        parameters:
+            url: "script_agent"
+
+    action:                                # required
+        ref: "kepsoar.agent_script_automation"
+        parameters:                        # optional
+            script: "{{ trigger.body.script }}"
+            log_id: "{{ trigger.body.log_id }}"
+            caution: "{{ trigger.body.caution }}"

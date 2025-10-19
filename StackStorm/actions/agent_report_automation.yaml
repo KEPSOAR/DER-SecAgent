@@ -1,0 +1,20 @@
+---
+name: agent_report_automation
+pack: kepsoar
+description: A basic sequential workflow.
+runner_type: orquesta
+entry_point: workflows/agent_report_automation.yaml
+enabled: true
+parameters:
+  script:
+    required: true
+    type: string
+  report:
+    required: true
+    type: string
+  log_id:
+    required: true
+    type: number
+  caution:
+    required: true
+    type: string

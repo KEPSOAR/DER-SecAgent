@@ -1,0 +1,17 @@
+---
+name: "alert_report"
+runner_type: "python-script"
+description: "Post message to slack."
+enabled: true
+entry_point: "alert_report.py"
+parameters:
+    report:
+        type: "string"
+        description: "report"
+        required: true
+        position: 0
+    script:
+        type: "string"
+        description: "script"
+        required: true
+        position: 1

@@ -1,0 +1,9 @@
+---
+runner_type: "local-shell-script"
+description: A execute script action.
+enabled: true
+entry_point: execute_script.sh
+name: execute_script
+parameters:
+  script:
+    type: string

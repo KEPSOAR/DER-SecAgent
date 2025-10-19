@@ -1,0 +1,19 @@
+---
+    name: "slack_web_hook"                      # required
+    pack: "kepsoar"                       # optional
+    description: "slack web hook"       # optional
+    enabled: true                          # required
+
+    trigger:                               # required
+        type: "core.st2.webhook"
+        parameters:
+            url: "slack"
+
+    action:                                # required
+        ref: "kepsoar.slack_automation"
+        parameters:                        # optional
+            agent_script: "{{ trigger.body.agent_script }}"
+            user_script: "{{ trigger.body.user_script }}"
+            changed_reason: "{{ trigger.body.changed_reason }}"
+            log_id: "{{ trigger.body.log_id }}"
+            caution: "{{ trigger.body.caution }}"

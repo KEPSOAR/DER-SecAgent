@@ -1,0 +1,107 @@
+---
+name: "save_log"
+runner_type: "python-script"
+description: "Save log."
+enabled: true
+entry_point: "save_log.py"
+parameters:
+    event_time:
+        type: "string"
+        description: "The time of the event"
+        required: true
+        position: 0
+    device_ip:
+        type: "string"
+        description: "IP address of the device"
+        required: true
+        position: 1
+    device_name:
+        type: "string"
+        description: "Name of the device"
+        required: true
+        position: 2
+    source_institution_code:
+        type: "string"
+        description: "Source institution code"
+        required: true
+        position: 3
+    source_ip:
+        type: "string"
+        description: "Source IP address"
+        required: true
+        position: 4
+    source_port:
+        type: "integer"
+        description: "Source port"
+        required: true
+        position: 5
+    source_asset_name:
+        type: "string"
+        description: "Source asset name"
+        required: true
+        position: 6
+    source_country:
+        type: "string"
+        description: "Source country"
+        required: true
+        position: 7
+    source_mac:
+        type: "string"
+        description: "Source MAC address"
+        required: true
+        position: 8
+    dest_institution_code:
+        type: "string"
+        description: "Destination institution code"
+        required: true
+        position: 9
+    dest_ip:
+        type: "string"
+        description: "Destination IP address"
+        required: true
+        position: 10
+    dest_port:
+        type: "integer"
+        description: "Destination port"
+        required: true
+        position: 11
+    dest_asset_name:
+        type: "string"
+        description: "Destination asset name"
+        required: true
+        position: 12
+    dest_country:
+        type: "string"
+        description: "Destination country"
+        required: true
+        position: 13
+    dest_mac:
+        type: "string"
+        description: "Destination MAC address"
+        required: true
+        position: 14
+    protocol:
+        type: "string"
+        description: "Protocol used"
+        required: true
+        position: 15
+    action:
+        type: "string"
+        description: "Action taken"
+        required: true
+        position: 16
+    attack_type:
+        type: "string"
+        description: "Type of attack"
+        required: true
+        position: 17
+    account:
+        type: "string"
+        description: "Account involved"
+        required: true
+        position: 18
+    risk_level:
+        type: "string"
+        description: "Risk level"
+        required: true
+        position: 19

@@ -1,0 +1,12 @@
+---
+version: 1.0
+
+description: Agent automation workflow.
+
+input:
+  - script
+  - log_id
+  - caution
+tasks:
+  task1:
+    action: kepsoar.alert_history script=<% ctx(script) %> log_id=<% ctx(log_id) %> caution=<% ctx(caution) %>

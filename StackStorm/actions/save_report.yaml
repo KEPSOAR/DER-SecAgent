@@ -1,0 +1,12 @@
+---
+name: "save_report"
+runner_type: "python-script"
+description: "Save report."
+enabled: true
+entry_point: "save_report.py"
+parameters:
+    report:
+        type: "string"
+        description: "Report"
+        required: true
+        position: 1

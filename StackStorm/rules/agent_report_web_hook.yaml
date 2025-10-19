@@ -1,0 +1,18 @@
+---
+    name: "agent_report_web_hook"                      # required
+    pack: "kepsoar"                       # optional
+    description: "agent report web hook"       # optional
+    enabled: true                          # required
+
+    trigger:                               # required
+        type: "core.st2.webhook"
+        parameters:
+            url: "report_agent"
+
+    action:                                # required
+        ref: "kepsoar.agent_report_automation"
+        parameters:                        # optional
+            script: "{{ trigger.body.script }}"
+            report: "{{ trigger.body.report }}"
+            log_id: "{{ trigger.body.log_id }}"
+            caution: "{{ trigger.body.caution }}"

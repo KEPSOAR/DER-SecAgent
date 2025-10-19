@@ -1,0 +1,68 @@
+---
+name: ids_automation
+pack: kepsoar
+description: A basic sequential workflow.
+runner_type: orquesta
+entry_point: workflows/ids_automation.yaml
+enabled: true
+parameters:
+  event_time:
+    required: true
+    type: string
+  device_ip:
+    required: true
+    type: string
+  device_name:
+    required: true
+    type: string
+  source_institution_code:
+    required: true
+    type: string
+  source_ip:
+    required: true
+    type: string
+  source_port:
+    required: true
+    type: string
+  source_asset_name:
+    required: true
+    type: string
+  source_country:
+    required: true
+    type: string
+  source_mac:
+    required: true
+    type: string
+  dest_institution_code:
+    required: true
+    type: string
+  dest_ip:
+    required: true
+    type: string
+  dest_port:
+    required: true
+    type: string
+  dest_asset_name:
+    required: true
+    type: string
+  dest_country:
+    required: true
+    type: string
+  dest_mac:
+    required: true
+    type: string
+  protocol:
+    required: true
+    type: string
+  action:
+    required: true
+    type: string
+  attack_type:
+    required: true
+    type: string
+  account:
+    required: true
+    type: string
+  risk_level:
+    required: true
+    type: string

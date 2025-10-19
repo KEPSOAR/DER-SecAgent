@@ -1,0 +1,29 @@
+---
+version: 1.0
+
+description: Slack automation workflow.
+
+input:
+  - agent_script
+  - user_script
+  - changed_reason
+  - log_id
+  - caution
+tasks:
+  task1:
+    action: kepsoar.execute_script script=<% ctx(user_script) %>
+    next:
+      - when: <% succeeded() %>
+        do: task2
+        # To do: 실패 시에도 메시지 전송
+  task2:
+    action: kepsoar.save_history agent_script=<% ctx(agent_script) %> user_script=<% ctx(user_script) %> changed_reason=<% ctx(changed_reason) %> log_id=<% ctx(log_id) %> caution=<% ctx(caution) %>
+    next:
+    - publish:
+      - stuff_result_stdout: <% result().stdout %>
+      - when: "{{ succeeded() }}"
+      do:
+      - "task3"
+  task3:
+    action: core.remote cmd="source venv/bin/activate && python3 Multi_AI_Agent/main.py <% ctx().stuff_result_stdout %> report" hosts="168.188.128.36:20140" cwd="/root" username="root" password="hg1101sms3550" timeout=300
+

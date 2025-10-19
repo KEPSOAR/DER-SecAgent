@@ -1,0 +1,18 @@
+---
+version: 1.0
+
+description: Agent automation workflow.
+
+input:
+  - script
+  - report
+  - log_id
+  - caution
+tasks:
+  task1:
+    action: kepsoar.alert_report report=<% ctx(report) %> script=<% ctx(script) %>
+    next:
+      - when: <% succeeded() %>
+        do: task2
+  task2:
+    action: kepsoar.save_report report=<% ctx(report) %>

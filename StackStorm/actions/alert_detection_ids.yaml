@@ -1,0 +1,107 @@
+---
+name: "alert_detection_ids"
+runner_type: "python-script"
+description: "Post message to slack."
+enabled: true
+entry_point: "alert_detection_ids.py"
+parameters:
+    event_time:
+        type: "string"
+        description: "보안 장비에서 이벤트나 로그가 발생한 날짜와 시간"
+        required: true
+        position: 0
+    device_ip:
+        type: "string"
+        description: "이벤트를 기록한 보안 장비의 IP 주소"
+        required: true
+        position: 1
+    device_name:
+        type: "string"
+        description: "보안 설비의 이름 또는 식별자"
+        required: true
+        position: 2
+    source_institution_code:
+        type: "string"
+        description: "트래픽이 발생한 출발지 기관이나 부서 식별 코드"
+        required: true
+        position: 3
+    source_ip:
+        type: "string"
+        description: "네트워크 트래픽의 시작 지점인 출발지의 IP 주소"
+        required: true
+        position: 4
+    source_port:
+        type: "integer"
+        description: "출발지에서 통신에 사용된 포트번호"
+        required: true
+        position: 5
+    source_asset_name:
+        type: "string"
+        description: "출발지와 관련된 자산 (예: 사용자, 장비 또는 시스템)"
+        required: true
+        position: 6
+    source_country:
+        type: "string"
+        description: "트래픽이 시작된 출발지의 국가"
+        required: true
+        position: 7
+    source_mac:
+        type: "string"
+        description: "출발지의 MAC 주소"
+        required: true
+        position: 8
+    dest_institution_code:
+        type: "string"
+        description: "트래픽이 향하는 목적지 기관이나 부서 식별 코드"
+        required: true
+        position: 9
+    dest_ip:
+        type: "string"
+        description: "네트워크 트래픽의 목적지 IP 주소"
+        required: true
+        position: 10
+    dest_port:
+        type: "integer"
+        description: "목적지에서 사용된 포트 번호"
+        required: true
+        position: 11
+    dest_asset_name:
+        type: "string"
+        description: "목적지와 관련된 자산의 이름 (예: 서버, 장비 또는 시스템)"
+        required: true
+        position: 12
+    dest_country:
+        type: "string"
+        description: "트래픽의 목적지인 국가"
+        required: true
+        position: 13
+    dest_mac:
+        type: "string"
+        description: "목적지의 MAC 주소"
+        required: true
+        position: 14
+    protocol:
+        type: "string"
+        description: "통신에 사용되는 프로토콜 (예: tcp, ip, udp 등)"
+        required: true
+        position: 15
+    action:
+        type: "string"
+        description: "보안 장비가 해당 트래픽에 대해 취한 조치 (예: allow, deny 등)"
+        required: true
+        position: 16
+    attack_type:
+        type: "string"
+        description: "탐지된 공격의 유형"
+        required: true
+        position: 17
+    account:
+        type: "string"
+        description: "관련된 사용자 계정"
+        required: true
+        position: 18
+    risk_level:
+        type: "string"
+        description: "위험 수준 (예: low, medium, high)"
+        required: true
+        position: 19

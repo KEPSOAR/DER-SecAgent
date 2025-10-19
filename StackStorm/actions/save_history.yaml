@@ -1,0 +1,32 @@
+---
+name: "save_history"
+runner_type: "python-script"
+description: "Save history."
+enabled: true
+entry_point: "save_history.py"
+parameters:
+    agent_script:
+        type: "string"
+        description: "Agent script"
+        required: true
+        position: 0
+    user_script:
+        type: "string"
+        description: "User script"
+        required: true
+        position: 1
+    changed_reason:
+        type: "string"
+        description: "Changed reason"
+        required: true
+        position: 2
+    log_id:
+        type: "string"
+        description: "Log id"
+        required: true
+        position: 3
+    caution:
+        type: "string"
+        description: "Caution level"
+        required: true
+        position: 4

@@ -1,0 +1,34 @@
+---
+    name: "ids_rule"                      # required
+    pack: "kepsoar"                       # optional
+    description: "IDS rule"       # optional
+    enabled: true                          # required
+
+    trigger:                               # required
+        type: "core.st2.webhook"
+        parameters:
+            url: "ids"
+
+    action:                                # required
+        ref: "kepsoar.ids_automation"
+        parameters:                        # optional
+            event_time: "{{ trigger.body.event_time }}"
+            device_ip: "{{ trigger.body.device_ip }}"
+            device_name: "{{ trigger.body.device_name }}"
+            source_institution_code: "{{ trigger.body.source_institution_code }}"
+            source_ip: "{{ trigger.body.source_ip }}"
+            source_port: "{{ trigger.body.source_port }}"
+            source_asset_name: "{{ trigger.body.source_asset_name }}"
+            source_country: "{{ trigger.body.source_country }}"
+            source_mac: "{{ trigger.body.source_mac }}"
+            dest_institution_code: "{{ trigger.body.dest_institution_code }}"
+            dest_ip: "{{ trigger.body.dest_ip }}"
+            dest_port: "{{ trigger.body.dest_port }}"
+            dest_asset_name: "{{ trigger.body.dest_asset_name }}"
+            dest_country: "{{ trigger.body.dest_country }}"
+            dest_mac: "{{ trigger.body.dest_mac }}"
+            protocol: "{{ trigger.body.protocol }}"
+            action: "{{ trigger.body.action }}"
+            attack_type: "{{ trigger.body.attack_type }}"
+            account: "{{ trigger.body.account }}"
+            risk_level: "{{ trigger.body.risk_level }}"

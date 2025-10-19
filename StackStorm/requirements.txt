@@ -1,0 +1,6 @@
+cloud-sql-python-connector
+sqlalchemy
+pymysql
+python-dotenv
+psycopg2-binary
+dotenv

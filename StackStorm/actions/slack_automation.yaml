@@ -1,0 +1,23 @@
+---
+name: slack_automation
+pack: kepsoar
+description: A basic sequential workflow.
+runner_type: orquesta
+entry_point: workflows/slack_automation.yaml
+enabled: true
+parameters:
+  agent_script:
+    required: true
+    type: string
+  user_script:
+    required: true
+    type: string
+  changed_reason:
+    required: true
+    type: string
+  log_id:
+    required: true
+    type: string
+  caution:
+    required: true
+    type: string
