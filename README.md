@@ -22,7 +22,7 @@
 
 
 
-# Biomni: A General-Purpose Biomedical AI Agent
+# DER-SecAgent
 
 ## Overview
 
