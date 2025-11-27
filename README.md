@@ -96,10 +96,10 @@ If you use this repository or the DER-SecAgent LoRA adapter in your research or 
 ```bibtex
 @misc{hwang2025dersecagent,
   title        = {DER-SecAgent: A Multi-Agent based Cybersecurity Framework for Distributed Energy Resources},
-  author       = {Hwang, MyeongHa, Kyungmin Kim, Hyeongu Kim, Yoojin Kwon, Sungho Lee},
+  author       = {Myeong-Ha Hwang, Kyungmin Kim, Hyeongu Kim, Yoojin Kwon, Sungho Lee},
   year         = {2025},
   howpublished = {\url{https://github.com/KEPSOAR/DER-SecAgent}},
-  note         = {Includes the DER-SecAgent-LLama3.2-3B-Inst-SFT LoRA adapter.}
+  note         = {Includes the DER-SecAgent-LLama3.2-3B-Inst-SFT LoRA adapter},
   journal      = {[TBD] Applied Energy (SCIE)}
 }
 
