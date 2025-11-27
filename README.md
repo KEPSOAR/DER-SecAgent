@@ -2,30 +2,12 @@
   <img src="./assets/logo.png" alt="DER-SecAgent Logo" width="600px" />
 </p>
 
-<p align="center">
-<a href="https://join.slack.com/t/biomnigroup/shared_invite/zt-3avks4913-dotMBt8D_apQnJ3mG~ak6Q">
-<img src="https://img.shields.io/badge/Join-Slack-4A154B?style=for-the-badge&logo=slack" alt="Join Slack" />
-</a>
-<a href="https://biomni.stanford.edu">
-<img src="https://img.shields.io/badge/Try-Web%20UI-blue?style=for-the-badge" alt="Web UI" />
-</a>
-<a href="https://x.com/ProjectBiomni">
-<img src="https://img.shields.io/badge/Follow-on%20X-black?style=for-the-badge&logo=x" alt="Follow on X" />
-</a>
-<a href="https://www.linkedin.com/company/project-biomni">
-<img src="https://img.shields.io/badge/Follow-LinkedIn-0077B5?style=for-the-badge&logo=linkedin" alt="Follow on LinkedIn" />
-</a>
-<a href="https://www.biorxiv.org/content/10.1101/2025.05.30.656746v1">
-<img src="https://img.shields.io/badge/Read-Paper-green?style=for-the-badge" alt="Paper" />
-</a>
-</p>
-
 
 
 # DER-SecAgent
 
-> **Multi-Agent AI Copilot for Distributed Energy Resources (DER) Security**  
-> A research framework for using LLM agents to assist with cybersecurity for DER and power-system OT/ICS.
+> **DER-SecAgent: A Multi-Agent based Cybersecurity Framework for Distributed Energy Resources**  
+> AI agent to assist with cybersecurity for DER and power-system OT/ICS.
 
 **DER-SecAgent** uses domain-adapted language models to help with:
 
@@ -106,6 +88,8 @@ cd DER-SecAgent
 pip install -r requirements.txt
 
 ```
+---
+
 @misc{dersecagent2025,
   title        = {DER-SecAgent: A Multi-Agent based Cybersecurity Framework for Distributed Energy Resources},
   author       = {Hwang, MyeongHa, Kyungmin Kim, Hyeongu Kim, Yoojin Kwon, Sungho Lee},
@@ -113,4 +97,5 @@ pip install -r requirements.txt
   howpublished = {\url{https://github.com/KEPSOAR/DER-SecAgent}},
   note         = {Includes the DER-SecAgent-LLama3.2-3B-Inst-SFT LoRA adapter.}
 }
-```
+
+---
