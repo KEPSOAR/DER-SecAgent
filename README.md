@@ -24,334 +24,93 @@
 
 # DER-SecAgent
 
-## Overview
+> **Multi-Agent AI Copilot for Distributed Energy Resources (DER) Security**  
+> A research framework for using LLM agents to assist with cybersecurity for DER and power-system OT/ICS.
 
+**DER-SecAgent** uses domain-adapted language models to help with:
 
-Biomni is a general-purpose biomedical AI agent designed to autonomously execute a wide range of research tasks across diverse biomedical subfields. By integrating cutting-edge large language model (LLM) reasoning with retrieval-augmented planning and code-based execution, Biomni helps scientists dramatically enhance research productivity and generate testable hypotheses.
+- Security assessments for solar PV, ESS, inverters/PCS, EV chargers, EMS/DERMS, etc.
+- Threat and risk analysis for OT/ICS architectures
+- Drafting security reports, checklists, and action plans
 
+This repository is intended as a **research / prototype framework**, not a production-ready security product.
 
-## Quick Start
+---
 
-### Installation
+## Key Features
 
-Our software environment is massive and we provide a single setup.sh script to setup.
-Follow this [file](biomni_env/README.md) to setup the env first.
+- 🔐 **DER / OT Security–Specialized LLM Agent**
+  - Focus on DER equipment (PV, ESS, PCS/inverters, EV chargers, gateways, EMS/DERMS)
+  - OT network / DMZ / firewall / remote access security reasoning
 
-Then activate the environment E1:
+- 📄 **PDF → SFT Dataset Pipeline (Concept)**
+  - Ingest security guidelines, checklists, and reports in PDF form
+  - Clean and convert them into instruction–response pairs (SFT dataset) for training
 
-```bash
-conda activate biomni_e1
-```
+- 🧠 **Multi-Agent Architecture (Planned)**
+  - Separation between:
+    - “Analysis / report agent” (text generation, explanation, summaries)
+    - “Policy / action agent” (rule-based logic, playbooks, orchestration)
+  - Future examples using LangGraph or similar multi-agent frameworks
 
-then install the biomni official pip package:
+- ☁️ **Hugging Face & PEFT Integration**
+  - LoRA / QLoRA training scripts (planned)
+  - Easy integration with the published DER-SecAgent adapter on Hugging Face:
+    - [`MyeongHaHwang/DER-SecAgent-LLama3.2-3B-Inst-SFT`](https://huggingface.co/MyeongHaHwang/DER-SecAgent-LLama3.2-3B-Inst-SFT)
 
-```bash
-pip install biomni --upgrade
-```
+---
 
-For the latest update, install from the github source version, or do:
+## Architecture Overview
 
-```bash
-pip install git+https://github.com/snap-stanford/Biomni.git@main
-```
+High-level layers:
 
-Lastly, configure your API keys using one of the following methods:
+1. **Document Layer – Security Knowledge Ingestion**
+   - Collect DER / OT / ICS security PDFs (guidelines, manuals, audit checklists, case reports)
+   - Extract and clean text
+   - Turn content into instruction–response pairs for supervised fine-tuning (SFT)
 
-<details>
-<summary>Click to expand</summary>
+2. **Model Layer – Domain-Specific LLM**
+   - Base model: `meta-llama/Llama-3.2-3B-Instruct`
+   - LoRA / QLoRA SFT to create a DER security–specialized adapter
+   - Adapter published on Hugging Face for reuse
 
-#### Option 1: Using .env file (Recommended)
+3. **Agent Layer – Security Copilot / Orchestrator**
+   - “Security analysis & reporting” agent:
+     - Q&A, explanations, summaries, report drafts
+   - (Planned) “Policy & action” agent:
+     - Maps findings to recommended controls, playbooks, or automation steps
+   - Future multi-agent flows (e.g., LangGraph) to coordinate between agents
 
-Create a `.env` file in your project directory:
+---
 
-```bash
-# Copy the example file
-cp .env.example .env
+## Getting Started
 
-# Edit the .env file with your actual API keys
-```
+### 1. Requirements
 
-Your `.env` file should look like:
+Typical environment (adjust as needed):
 
-```env
-# Required: Anthropic API Key for Claude models
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
+- Python 3.10+
+- PyTorch 2.x
+- `transformers` (e.g., ≥ 4.43)
+- `peft` (e.g., 0.17.1)
+- Optional: `bitsandbytes` for 4-bit / 8-bit quantization
+- GPU with ~24–40GB VRAM recommended for training / finetuning
 
-# Optional: OpenAI API Key (if using OpenAI models)
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Optional: Azure OpenAI API Key (if using Azure OpenAI models)
-OPENAI_API_KEY=your_azure_openai_api_key
-OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/
-
-# Optional: AI Studio Gemini API Key (if using Gemini models)
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Optional: groq API Key (if using groq as model provider)
-GROQ_API_KEY=your_groq_api_key_here
-
-# Optional: Set the source of your LLM for example:
-#"OpenAI", "AzureOpenAI", "Anthropic", "Ollama", "Gemini", "Bedrock", "Groq", "Custom"
-LLM_SOURCE=your_LLM_source_here
-
-# Optional: AWS Bedrock Configuration (if using AWS Bedrock models)
-AWS_BEARER_TOKEN_BEDROCK=your_bedrock_api_key_here
-AWS_REGION=us-east-1
-
-# Optional: Custom model serving configuration
-# CUSTOM_MODEL_BASE_URL=http://localhost:8000/v1
-# CUSTOM_MODEL_API_KEY=your_custom_api_key_here
-
-# Optional: Biomni data path (defaults to ./data)
-# BIOMNI_DATA_PATH=/path/to/your/data
-
-# Optional: Timeout settings (defaults to 600 seconds)
-# BIOMNI_TIMEOUT_SECONDS=600
-```
-
-#### Option 2: Using shell environment variables
-
-Alternatively, configure your API keys in bash profile `~/.bashrc`:
+### 2. Installation
 
 ```bash
-export ANTHROPIC_API_KEY="YOUR_API_KEY"
-export OPENAI_API_KEY="YOUR_API_KEY" # optional if you just use Claude
-export OPENAI_ENDPOINT="https://your-resource-name.openai.azure.com/" # optional unless you are using Azure
-export AWS_BEARER_TOKEN_BEDROCK="YOUR_BEDROCK_API_KEY" # optional for AWS Bedrock models
-export AWS_REGION="us-east-1" # optional, defaults to us-east-1 for Bedrock
-export GEMINI_API_KEY="YOUR_GEMINI_API_KEY" #optional if you want to use a gemini model
-export GROQ_API_KEY="YOUR_GROQ_API_KEY" # Optional: set this to use models served by Groq
-export LLM_SOURCE="Groq" # Optional: set this to use models served by Groq
+git clone https://github.com/KEPSOAR/DER-SecAgent.git
+cd DER-SecAgent
 
+# Example (adapt to the actual repo contents)
+pip install -r requirements.txt
 
 ```
-</details>
-
-
-#### ⚠️ Known Package Conflicts
-
-Some Python packages are not installed by default in the Biomni environment due to dependency conflicts. If you need these features, you must install the packages manually and may need to uncomment relevant code in the codebase. See the up-to-date list and details in [docs/known_conflicts.md](./docs/known_conflicts.md).
-
-### Basic Usage
-
-Once inside the environment, you can start using Biomni:
-
-```python
-from biomni.agent import A1
-
-# Initialize the agent with data path, Data lake will be automatically downloaded on first run (~11GB)
-agent = A1(path='./data', llm='claude-sonnet-4-20250514')
-
-# Execute biomedical tasks using natural language
-agent.go("Plan a CRISPR screen to identify genes that regulate T cell exhaustion, generate 32 genes that maximize the perturbation effect.")
-agent.go("Perform scRNA-seq annotation at [PATH] and generate meaningful hypothesis")
-agent.go("Predict ADMET properties for this compound: CC(C)CC1=CC=C(C=C1)C(C)C(=O)O")
-```
-If you plan on using Azure for your model, always prefix the model name with azure- (e.g. llm='azure-gpt-4o').
-
-### Configuration Management
-
-Biomni includes a centralized configuration system that provides flexible ways to manage settings. You can configure Biomni through environment variables, runtime modifications, or direct parameters.
-
-```python
-from biomni.config import default_config
-from biomni.agent import A1
-
-# RECOMMENDED: Modify global defaults for consistency
-default_config.llm = "gpt-4"
-default_config.timeout_seconds = 1200
-
-# All agents AND database queries use these defaults
-agent = A1()  # Everything uses gpt-4, 1200s timeout
-```
-
-**Note**: Direct parameters to `A1()` only affect that agent's reasoning, not database queries. For consistent configuration across all operations, use `default_config` or environment variables.
-
-For detailed configuration options, see the **[Configuration Guide](docs/configuration.md)**.
-
-### PDF Generation
-
-Generate PDF reports of execution traces:
-
-```python
-from biomni.agent import A1
-
-# Initialize agent
-agent = A1(path='./data', llm='claude-sonnet-4-20250514')
-
-# Run your task
-agent.go("Your biomedical task here")
-
-# Save conversation history as PDF
-agent.save_conversation_history("my_analysis_results.pdf")
-```
-
-**PDF Generation Dependencies:**
-<details>
-<summary>Click to expand</summary>
-For optimal PDF generation, install one of these packages:
-
-```bash
-# Option 1: WeasyPrint (recommended for best layout control)
-# Conda environment (recommended)
-conda install weasyprint
-
-# System installation
-brew install weasyprint  # macOS
-apt install weasyprint   # Linux
-
-# See [WeasyPrint Installation Guide](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html) for detailed instructions.
-
-# Option 2: markdown2pdf (Rust-based, fast and reliable)
-# macOS:
-brew install theiskaa/tap/markdown2pdf
-
-# Windows/Linux (using Cargo):
-cargo install markdown2pdf
-
-# Or download prebuilt binaries from:
-# https://github.com/theiskaa/markdown2pdf/releases/latest
-
-# Option 3: Pandoc (pip installation)
-pip install pandoc
-```
-</details>
-
-## MCP (Model Context Protocol) Support
-
-Biomni supports MCP servers for external tool integration:
-
-```python
-from biomni.agent import A1
-
-agent = A1()
-agent.add_mcp(config_path="./mcp_config.yaml")
-agent.go("Find FDA active ingredient information for ibuprofen")
-```
-
-**Built-in MCP Servers:**
-For usage and implementation details, see the [MCP Integration Documentation](docs/mcp_integration.md) and examples in [`tutorials/examples/add_mcp_server/`](tutorials/examples/add_mcp_server/) and [`tutorials/examples/expose_biomni_server/`](tutorials/examples/expose_biomni_server/).
-
-
-## Biomni-R0
-
-**Biomni-R0** is our first reasoning model for biology, built on Qwen-32B with reinforcement learning from agent interaction data. It's designed to excel at tool use, multi-step reasoning, and complex biological problem-solving through iterative self-correction.
-
-- 🤗 Model: [biomni/Biomni-R0-32B-Preview](https://huggingface.co/biomni/Biomni-R0-32B-Preview)
-- 📝 Technical Report: [biomni.stanford.edu/blog/biomni-r0-technical-report](https://biomni.stanford.edu/blog/biomni-r0-technical-report)
-
-To use Biomni-R0 for agent reasoning while keeping database queries on your usual provider (recommended), run a local SGLang server and pass the model to `A1()` directly.
-
-1) Launch SGLang with Biomni-R0:
-
-```bash
-python -m sglang.launch_server --model-path RyanLi0802/Biomni-R0-Preview --port 30000 --host 0.0.0.0 --mem-fraction-static 0.8 --tp 2 --trust-remote-code --json-model-override-args '{"rope_scaling":{"rope_type":"yarn","factor":1.0,"original_max_position_embeddings":32768}, "max_position_embeddings": 131072}'
-```
-
-2) Point the agent to your SGLang endpoint for reasoning:
-
-```python
-from biomni.config import default_config
-from biomni.agent import A1
-
-# Database queries (indexes, retrieval, etc.) use default_config
-default_config.llm = "claude-3-5-sonnet-20241022"
-default_config.source = "Anthropic"
-
-# Agent reasoning uses Biomni-R0 served via SGLang (OpenAI-compatible API)
-agent = A1(
-    llm="biomni/Biomni-R0-32B-Preview",
-    source="Custom",
-    base_url="http://localhost:30000/v1",
-    api_key="EMPTY",
-)
-
-agent.go("Plan a CRISPR screen to identify genes regulating T cell exhaustion")
-```
-
-## Biomni-Eval1
-
-**Biomni-Eval1** is a comprehensive evaluation benchmark for assessing biological reasoning capabilities across diverse tasks. It contains **433 instances** spanning **10 biological reasoning tasks**, from gene identification to disease diagnosis.
-
-**Tasks Included:**
-- GWAS causal gene identification (3 variants)
-- Lab bench Q&A (2 variants)
-- Patient gene detection
-- Screen gene retrieval
-- GWAS variant prioritization
-- Rare disease diagnosis
-- CRISPR delivery method selection
-
-**Resources:**
-- 🤗 Dataset: [biomni/Eval1](https://huggingface.co/datasets/biomni/Eval1)
-- 💻 Quick Start:
-```python
-from biomni.eval import BiomniEval1
-
-evaluator = BiomniEval1()
-score = evaluator.evaluate('gwas_causal_gene_opentargets', 0, 'BRCA1')
-```
-
-
-## 🤝 Contributing to Biomni
-
-Biomni is an open-science initiative that thrives on community contributions. We welcome:
-
-- **🔧 New Tools**: Specialized analysis functions and algorithms
-- **📊 Datasets**: Curated biomedical data and knowledge bases
-- **💻 Software**: Integration of existing biomedical software packages
-- **📋 Benchmarks**: Evaluation datasets and performance metrics
-- **📚 Misc**: Tutorials, examples, and use cases
-- **🔧 Update existing tools**: many current tools are not optimized - fix and replacements are welcome!
-
-Check out this **[Contributing Guide](CONTRIBUTION.md)** on how to contribute to the Biomni ecosystem.
-
-If you have particular tool/database/software in mind that you want to add, you can also submit to [this form](https://forms.gle/nu2n1unzAYodTLVj6) and the biomni team will implement them.
-
-## 🔬 Call for Contributors: Help Build Biomni-E2
-
-Biomni-E1 only scratches the surface of what’s possible in the biomedical action space.
-
-Now, we’re building **Biomni-E2** — a next-generation environment developed **with and for the community**.
-
-We believe that by collaboratively defining and curating a shared library of standard biomedical actions, we can accelerate science for everyone.
-
-**Join us in shaping the future of biomedical AI agent.**
-
-- **Contributors with significant impact** (e.g., 10+ significant & integrated tool contributions or equivalent) will be **invited as co-authors** on our upcoming paper in a top-tier journal or conference.
-- **All contributors** will be acknowledged in our publications.
-- More contributor perks...
-
-Let’s build it together.
-
-
-## Tutorials and Examples
-
-**[Biomni 101](./tutorials/biomni_101.ipynb)** - Basic concepts and first steps
-
-More to come!
-
-## 🌐 Web Interface
-
-Experience Biomni through our no-code web interface at **[biomni.stanford.edu](https://biomni.stanford.edu)**.
-
-[![Watch the video](https://img.youtube.com/vi/E0BRvl23hLs/maxresdefault.jpg)](https://youtu.be/E0BRvl23hLs)
-
-
-## Important Note
-- Security warning: Currently, Biomni executes LLM-generated code with full system privileges. If you want to use it in production, please use in isolated/sandboxed environments. The agent can access files, network, and system commands. Be careful with sensitive data or credentials.
-- This release was frozen as of April 15 2025, so it differs from the current web platform.
-- Biomni itself is Apache 2.0-licensed, but certain integrated tools, databases, or software may carry more restrictive commercial licenses. Review each component carefully before any commercial use.
-
-## Cite Us
-
-```
-@article{huang2025biomni,
-  title={Biomni: A General-Purpose Biomedical AI Agent},
-  author={Huang, Kexin and Zhang, Serena and Wang, Hanchen and Qu, Yuanhao and Lu, Yingzhou and Roohani, Yusuf and Li, Ryan and Qiu, Lin and Zhang, Junze and Di, Yin and others},
-  journal={bioRxiv},
-  pages={2025--05},
-  year={2025},
-  publisher={Cold Spring Harbor Laboratory}
+@misc{dersecagent2025,
+  title        = {DER-SecAgent: A Multi-Agent based Cybersecurity Framework for Distributed Energy Resources},
+  author       = {Hwang, MyeongHa, Kyungmin Kim, Hyeongu Kim, Yoojin Kwon, Sungho Lee},
+  year         = {2025},
+  howpublished = {\url{https://github.com/KEPSOAR/DER-SecAgent}},
+  note         = {Includes the DER-SecAgent-LLama3.2-3B-Inst-SFT LoRA adapter.}
 }
 ```
