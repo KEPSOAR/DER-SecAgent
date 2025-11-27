@@ -88,14 +88,17 @@ cd DER-SecAgent
 pip install -r requirements.txt
 
 ```
----
 
-@misc{dersecagent2025,
+## Cite Us
+
+If you use this repository or the DER-SecAgent LoRA adapter in your research or projects, please cite:
+
+```bibtex
+@misc{hwang2025dersecagent,
   title        = {DER-SecAgent: A Multi-Agent based Cybersecurity Framework for Distributed Energy Resources},
   author       = {Hwang, MyeongHa, Kyungmin Kim, Hyeongu Kim, Yoojin Kwon, Sungho Lee},
   year         = {2025},
   howpublished = {\url{https://github.com/KEPSOAR/DER-SecAgent}},
   note         = {Includes the DER-SecAgent-LLama3.2-3B-Inst-SFT LoRA adapter.}
 }
-
 ---
