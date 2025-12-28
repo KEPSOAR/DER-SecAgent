@@ -21,85 +21,99 @@ This repository is intended as a **research / prototype framework**, not a produ
 
 ## Key Features
 
-- 🔐 **DER / OT Security–Specialized LLM Agent**
-  - Focus on DER equipment (PV, ESS, PCS/inverters, EV chargers, gateways, EMS/DERMS)
-  - OT network / DMZ / firewall / remote access security reasoning
+This module implements the **DER-SecAgent multi-agent layer** orchestrated by an Automation Tool:
 
-- 📄 **PDF → SFT Dataset Pipeline (Concept)**
-  - Ingest security guidelines, checklists, and reports in PDF form
-  - Clean and convert them into instruction–response pairs (SFT dataset) for training
+- **Two operating modes**
+  - **`Script_Gen`**: Generate executable mitigation scripts (iptables-only in experiments)
+  - **`Report_Gen`**: Generate structured incident reports for operators
+- **Safety gate**
+  - **Caution Agent** reviews proposed scripts for potentially irreversible / high-impact actions
+  - Supports **human approval via ChatOps** (e.g., Slack) before execution
+- **(Optional) Evaluation role for experiments**
+  - A Judge-style evaluation agent can score scripts on **Syntax / Security / Optimization** (Agent-as-a-Judge)
 
-- 🧠 **Multi-Agent Architecture (Planned)**
-  - Separation between:
-    - “Analysis / report agent” (text generation, explanation, summaries)
-    - “Policy / action agent” (rule-based logic, playbooks, orchestration)
-  - Future examples using LangGraph or similar multi-agent frameworks
-
-- ☁️ **Hugging Face & PEFT Integration**
-  - LoRA / QLoRA training scripts (planned)
-  - Easy integration with the published DER-SecAgent adapter on Hugging Face:
-    - [`MyeongHaHwang/DER-SecAgent-LLama3.2-3B-Inst-SFT`](https://huggingface.co/MyeongHaHwang/DER-SecAgent-LLama3.2-3B-Inst-SFT)
+This repository is a **research prototype** and is **not** a production-ready security product.
 
 ---
 
 ## Architecture Overview
 
-High-level layers:
+### Agents (roles)
+- **Script Agent**
+  - Input: normalized IDS-style alert fields (attack type, src/dst IP/port, protocol, etc.)
+  - Output: candidate mitigation script (iptables rules in our experiments)
+- **Caution Agent (Safety / Irreversibility Gate)**
+  - Checks if the generated CLI script may cause irreversible changes
+  - Emits a boolean *caution* flag + short rationale for operator/automation gating
+- **Report Agent**
+  - Produces a structured incident report (overview, assets, actions, impact, recommendations)
+  - Includes a conditional re-check path when a script is modified (**`is_script_changed`**)
+- **(Optional) Judge Agent (Experiment/Evaluation)**
+  - Scores generated scripts on Syntax/Security/Optimization using an LLM-as-a-Judge protocol
 
-1. **Document Layer – Security Knowledge Ingestion**
-   - Collect DER / OT / ICS security PDFs (guidelines, manuals, audit checklists, case reports)
-   - Extract and clean text
-   - Turn content into instruction–response pairs for supervised fine-tuning (SFT)
+### Workflow (LangGraph)
+- Implemented as a **LangGraph state machine**
+- Automation Tool chooses **Mode**:
+  - `Script_Gen` → Script Agent → Caution Agent → return script (for ChatOps approval)
+  - `Report_Gen` → (optional Caution re-check if `is_script_changed=True`) → Report Agent
 
-2. **Model Layer – Domain-Specific LLM**
-   - Base model: `meta-llama/Llama-3.2-3B-Instruct`
-   - LoRA / QLoRA SFT to create a DER security–specialized adapter
-   - Adapter published on Hugging Face for reuse
+---
 
-3. **Agent Layer – Security Copilot / Orchestrator**
-   - “Security analysis & reporting” agent:
-     - Q&A, explanations, summaries, report drafts
-   - (Planned) “Policy & action” agent:
-     - Maps findings to recommended controls, playbooks, or automation steps
-   - Future multi-agent flows (e.g., LangGraph) to coordinate between agents
+## Model used by agents (DER-SecAgent backbone)
+
+All agent roles can share a **single domain-adapted LLaMA-family backbone** (role specialization via prompts/tool schemas).
+We provide a published LoRA adapter on Hugging Face:
+
+- **DER-SecAgent LoRA adapter**: `MyeongHaHwang/DER-SecAgent-LLama3.2-3B-Inst-SFT`  
+  (Base: `meta-llama/Llama-3.2-3B-Instruct`, PEFT/LoRA style loading)
 
 ---
 
 ## Getting Started
 
-### 1. Requirements
+### 1) Install
+```bash
+pip install -U "transformers>=4.43" peft accelerate
+pip install -U langgraph langchain-core
+# optional (quantization)
+pip install -U bitsandbytes
+```
 
-Typical environment (adjust as needed):
-
-- Python 3.10+
-- PyTorch 2.x
-- `transformers` (e.g., ≥ 4.43)
-- `peft` (e.g., 0.17.1)
-- Optional: `bitsandbytes` for 4-bit / 8-bit quantization
-- GPU with ~24–40GB VRAM recommended for training / finetuning
-
-### 2. Installation
+###2) Load the DER-SecAgent adapter (example)
 
 ```bash
-git clone https://github.com/KEPSOAR/DER-SecAgent.git
-cd DER-SecAgent
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
 
-# Example (adapt to the actual repo contents)
-pip install -r requirements.txt
+base_id = "meta-llama/Llama-3.2-3B-Instruct"
+lora_id = "MyeongHaHwang/DER-SecAgent-LLama3.2-3B-Inst-SFT"
 
+tok = AutoTokenizer.from_pretrained(base_id)
+base = AutoModelForCausalLM.from_pretrained(base_id, device_map="auto")
+model = PeftModel.from_pretrained(base, lora_id)
 ```
+###
+
+
 
 ## Cite Us
 
 If you use this repository or the DER-SecAgent LoRA adapter in your research or projects, please cite:
 
 ```bibtex
-@misc{hwang2025dersecagent,
-  title        = {DER-SecAgent: A Multi-Agent based Cybersecurity Framework for Distributed Energy Resources},
-  author       = {Myeong-Ha Hwang, Kyungmin Kim, Hyeongu Kim, Yoojin Kwon, Sungho Lee},
+@misc{hwang2025dersecagent_repo,
+  title        = {DER-SecAgent: A Multi-Agent based Cybersecurity Framework for Distributed Energy Resources (Code)},
+  author       = {Myeong-Ha Hwang and Kyungmin Kim and Hyeongu Kim and Yoojin Kwon and Sungho Lee},
   year         = {2025},
   howpublished = {\url{https://github.com/KEPSOAR/DER-SecAgent}},
-  note         = {Includes the DER-SecAgent-LLama3.2-3B-Inst-SFT LoRA adapter},
-  journal      = {[TBD] Applied Energy (SCIE)}
+  note         = {Multi-agent workflow (LangGraph) + ChatOps-oriented response pipeline}
+}
+
+@misc{hwang2025dersecagent_lora,
+  title        = {DER-SecAgent-LLama3.2-3B-Inst-SFT (LoRA adapter)},
+  author       = {Myeong-Ha Hwang and Kyungmin Kim and Hyeongu Kim and Yoojin Kwon and Sungho Lee},
+  year         = {2025},
+  howpublished = {\url{https://huggingface.co/MyeongHaHwang/DER-SecAgent-LLama3.2-3B-Inst-SFT}},
+  note         = {PEFT/LoRA adapter for DER/OT/ICS cybersecurity assistance}
 }
 
