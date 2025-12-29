@@ -2,3 +2,4 @@
 # auto.json
 venv/
 __pycache__/
+.env
