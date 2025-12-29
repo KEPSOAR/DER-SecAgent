@@ -1,7 +1,7 @@
 import sys
 from kepsoar.graph.build_graph import build
 from kepsoar.graph.states import operation_mode
-from kepsoar.db.db_connect import fetch_log_storage, fetch_all_logs, insert_log_entry, insert_history_entry, fetch_history_storage, fetch_history_storage_by_key
+from kepsoar.db.db_connect import fetch_log_storage, fetch_history_storage_by_key
 from kepsoar.utils.parser import parse, parse_from_history
 from kepsoar.graph.states import operation_mode, script_engineering_type
 
