@@ -2,11 +2,9 @@
   <img src="./assets/logo.png" alt="DER-SecAgent Logo" width="600px" />
 </p>
 
-
-
 # DER-SecAgent
 
-> **DER-SecAgent: A Multi-Agent based Cybersecurity Framework for Distributed Energy Resources**  
+> **DER-SecAgent: A Multi-Agent based Cybersecurity Framework for Distributed Energy Resources**
 > AI agent to assist with cybersecurity for DER and power-system OT/ICS.
 
 **DER-SecAgent** uses domain-adapted language models to help with:
@@ -39,12 +37,13 @@ This repository is a **research prototype** and is **not** a production-ready se
 ## Architecture Overview
 
 ### Agents (roles)
+
 - **Script Agent**
   - Input: normalized IDS-style alert fields (attack type, src/dst IP/port, protocol, etc.)
   - Output: candidate mitigation script (iptables rules in our experiments)
 - **Caution Agent (Safety / Irreversibility Gate)**
   - Checks if the generated CLI script may cause irreversible changes
-  - Emits a boolean *caution* flag + short rationale for operator/automation gating
+  - Emits a boolean _caution_ flag + short rationale for operator/automation gating
 - **Report Agent**
   - Produces a structured incident report (overview, assets, actions, impact, recommendations)
   - Includes a conditional re-check path when a script is modified (**`is_script_changed`**)
@@ -52,6 +51,7 @@ This repository is a **research prototype** and is **not** a production-ready se
   - Scores generated scripts on Syntax/Security/Optimization using an LLM-as-a-Judge protocol
 
 ### Workflow (LangGraph)
+
 - Implemented as a **LangGraph state machine**
 - Automation Tool chooses **Mode**:
   - `Script_Gen` → Script Agent → Caution Agent → return script (for ChatOps approval)
@@ -64,7 +64,7 @@ This repository is a **research prototype** and is **not** a production-ready se
 All agent roles can share a **single domain-adapted LLaMA-family backbone** (role specialization via prompts/tool schemas).
 We provide a published LoRA adapter on Hugging Face:
 
-- **DER-SecAgent LoRA adapter**: `MyeongHaHwang/DER-SecAgent-LLama3.2-3B-Inst-SFT`  
+- **DER-SecAgent LoRA adapter**: `MyeongHaHwang/DER-SecAgent-LLama3.2-3B-Inst-SFT`
   (Base: `meta-llama/Llama-3.2-3B-Instruct`, PEFT/LoRA style loading)
 
 ---
@@ -72,6 +72,7 @@ We provide a published LoRA adapter on Hugging Face:
 ## Getting Started
 
 ### 1) Install
+
 ```bash
 pip install -U "transformers>=4.43" peft accelerate
 pip install -U langgraph langchain-core
@@ -79,7 +80,7 @@ pip install -U langgraph langchain-core
 pip install -U bitsandbytes
 ```
 
-###2) Load the DER-SecAgent adapter (example)
+### 2) Load the DER-SecAgent adapter (example)
 
 ```bash
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -92,9 +93,8 @@ tok = AutoTokenizer.from_pretrained(base_id)
 base = AutoModelForCausalLM.from_pretrained(base_id, device_map="auto")
 model = PeftModel.from_pretrained(base, lora_id)
 ```
+
 ###
-
-
 
 ## Cite Us
 
@@ -117,3 +117,4 @@ If you use this repository or the DER-SecAgent LoRA adapter in your research or 
   note         = {PEFT/LoRA adapter for DER/OT/ICS cybersecurity assistance}
 }
 
+```
