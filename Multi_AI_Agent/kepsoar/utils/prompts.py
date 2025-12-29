@@ -49,14 +49,14 @@ Previous Response History:
 
 
 def build_cot(state: soar_input, history: str = "") -> str:
-    # 주의: 내부 체크리스트의 {dest_ip}/{device_ip}/{source_ip} 등은 변수명 그대로 보여야 하므로 {{ }}로 이스케이프
+    # Note: In the internal checklist, placeholders like {dest_ip}/{device_ip}/{source_ip} must appear literally; escape them with {{ }}.
     return f"""You are a senior security engineer specialized in iptables.
 
-You are given a single TCP log entry and a concise history of previously effective iptables commands. 
-Your task is to produce the minimal set of valid, actual CLI commands. 
+You are given a single TCP log entry and a concise history of previously effective iptables commands.
+Your task is to produce the minimal set of valid, actual CLI commands.
 If a similar command exists in the history, reuse it and adjust arguments.
 
-Think step by step **internally only**. Use a hidden scratchpad to reason about direction, chain, action, and flags. 
+Think step by step **internally only**. Use a hidden scratchpad to reason about direction, chain, action, and flags.
 **Never** reveal your reasoning or the scratchpad. **Only output the final commands.**
 
 INTERNAL REASONING CHECKLIST (DO NOT OUTPUT):

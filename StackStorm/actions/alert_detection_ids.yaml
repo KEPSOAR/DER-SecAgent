@@ -7,101 +7,101 @@ entry_point: "alert_detection_ids.py"
 parameters:
     event_time:
         type: "string"
-        description: "보안 장비에서 이벤트나 로그가 발생한 날짜와 시간"
+        description: "Date and time when an event or log occurred on the security device"
         required: true
         position: 0
     device_ip:
         type: "string"
-        description: "이벤트를 기록한 보안 장비의 IP 주소"
+        description: "IP address of the security device that recorded the event"
         required: true
         position: 1
     device_name:
         type: "string"
-        description: "보안 설비의 이름 또는 식별자"
+        description: "Name or identifier of the security device"
         required: true
         position: 2
     source_institution_code:
         type: "string"
-        description: "트래픽이 발생한 출발지 기관이나 부서 식별 코드"
+        description: "Identifier code of the source institution or department"
         required: true
         position: 3
     source_ip:
         type: "string"
-        description: "네트워크 트래픽의 시작 지점인 출발지의 IP 주소"
+        description: "Source IP address where the network traffic originated"
         required: true
         position: 4
     source_port:
         type: "integer"
-        description: "출발지에서 통신에 사용된 포트번호"
+        description: "Port number used by the source"
         required: true
         position: 5
     source_asset_name:
         type: "string"
-        description: "출발지와 관련된 자산 (예: 사용자, 장비 또는 시스템)"
+        description: "Asset associated with the source (e.g., user, device, or system)"
         required: true
         position: 6
     source_country:
         type: "string"
-        description: "트래픽이 시작된 출발지의 국가"
+        description: "Country where the traffic originated"
         required: true
         position: 7
     source_mac:
         type: "string"
-        description: "출발지의 MAC 주소"
+        description: "MAC address of the source"
         required: true
         position: 8
     dest_institution_code:
         type: "string"
-        description: "트래픽이 향하는 목적지 기관이나 부서 식별 코드"
+        description: "Identifier code of the destination institution or department"
         required: true
         position: 9
     dest_ip:
         type: "string"
-        description: "네트워크 트래픽의 목적지 IP 주소"
+        description: "Destination IP address of the network traffic"
         required: true
         position: 10
     dest_port:
         type: "integer"
-        description: "목적지에서 사용된 포트 번호"
+        description: "Port number used at the destination"
         required: true
         position: 11
     dest_asset_name:
         type: "string"
-        description: "목적지와 관련된 자산의 이름 (예: 서버, 장비 또는 시스템)"
+        description: "Name of the asset associated with the destination (e.g., server, device, or system)"
         required: true
         position: 12
     dest_country:
         type: "string"
-        description: "트래픽의 목적지인 국가"
+        description: "Country of the destination"
         required: true
         position: 13
     dest_mac:
         type: "string"
-        description: "목적지의 MAC 주소"
+        description: "MAC address of the destination"
         required: true
         position: 14
     protocol:
         type: "string"
-        description: "통신에 사용되는 프로토콜 (예: tcp, ip, udp 등)"
+        description: "Protocol used for communication (e.g., tcp, ip, udp)"
         required: true
         position: 15
     action:
         type: "string"
-        description: "보안 장비가 해당 트래픽에 대해 취한 조치 (예: allow, deny 등)"
+        description: "Action taken by the security device for this traffic (e.g., allow, deny)"
         required: true
         position: 16
     attack_type:
         type: "string"
-        description: "탐지된 공격의 유형"
+        description: "Detected attack type"
         required: true
         position: 17
     account:
         type: "string"
-        description: "관련된 사용자 계정"
+        description: "Related user account"
         required: true
         position: 18
     risk_level:
         type: "string"
-        description: "위험 수준 (예: low, medium, high)"
+        description: "Risk level (e.g., low, medium, high)"
         required: true
         position: 19

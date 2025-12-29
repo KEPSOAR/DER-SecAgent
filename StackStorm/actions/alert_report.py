@@ -14,7 +14,7 @@ class AlertReport(Action):
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*해당 script에 대한 대처가 완료되었고 보고서가 생성되었습니다!*\n스크립트\n{script}\n보고서\n{report}"
+                        "text": f"*The response for the script has been completed and a report has been generated!*\nScript\n{script}\nReport\n{report}"
                     }
                 },
                 {
@@ -25,7 +25,7 @@ class AlertReport(Action):
                     "elements": [
                         {
                         "type": "mrkdwn",
-                        "text": "👀 어떤 공격에 대한 대처인지 알고 싶다면 history-log를 참고해주세요",
+                        "text": "👀 To see which attack this response pertains to, please check the history log.",
                         },
                     ],
                 },

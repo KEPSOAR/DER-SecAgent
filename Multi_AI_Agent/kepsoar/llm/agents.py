@@ -101,18 +101,13 @@ report_gen_llm = OllamaLLM(model=OLLAMA_MODEL_NAME, base_url=OLLAMA_BASE_URL)
 
 def report_gen_agent(state: caution_eval_state) -> report_state:
     prompt = f"""[System Instruction]
-당신은 사이버 보안 전문가이자 전문 보고서 작성자입니다.
-공격 발생 시각, 유형, 자산 정보 등을 바탕으로 보안 사고 보고서를 작성하며,
-읽는 사람이 쉽게 이해할 수 있도록 간결하고 체계적으로 표현해야 합니다.
+You are a cyber security expert and a professional report writer.
+Based on attack time, type, and asset information, write a clear and structured security incident report.
 
 [User Instruction]
-아래는 DER(분산에너지자원) 환경에서 발생한 보안 사고에 대해
-규칙 기반으로 추출된 데이터입니다. 이 정보를 바탕으로,
-“공격 개요, 공격자 정보, 자산 정보, 대응 조치 및 시간,
-피해 영향도, 추가 권장 사항” 등을 모두 포함한
-**"DER 보안 사고 보고서"**를 **한국어**로 작성해 주세요.
+Below is data extracted via rules for a security incident in a DER (Distributed Energy Resources) environment. Using this information, write a "DER Security Incident Report" in English that includes: attack overview, attacker information, asset information, response actions and timeline, impact/severity, and additional recommendations.
 
-### 추출 데이터(예시)
+### Extracted Data (example)
 - Attack_Type: {state["attack_type"]}
 - Attack_Time:
 - Response_Time:
@@ -122,19 +117,19 @@ def report_gen_agent(state: caution_eval_state) -> report_state:
 - Attacker_IP:
 - Attacker_Address:
 
-### 출력 요구사항
-1. **보고서 제목**: “DER 보안 사고 보고서”
-2. **공격 개요**: 발생 시각, 공격 유형, 공격 동기(추정)
-3. **공격자 정보**: Attacker_IP, Attacker_Address
-4. **자산 정보(DER)**: DER_IP, DER_Address
-5. **대응 조치 및 시간**: 이벤트 감지·대응 완료 시점
-6. **피해 영향도**: Severity_Level에 따른 위험도·영향 범위
-7. **추가 권장 사항**: 보안 강화 조치 1~2가지
+### Output Requirements
+1. Report title: "DER Security Incident Report"
+2. Attack overview: time, attack type, presumed motivation
+3. Attacker information: Attacker_IP, Attacker_Address
+4. Asset information (DER): DER_IP, DER_Address
+5. Response actions and time: detection and response completion timestamps
+6. Impact/Severity: risk level and scope based on Severity_Level
+7. Additional recommendations: 1–2 hardening actions
 
-### 형식
-- A4 한 장 이내 분량, 한국어
-- 자연스럽고 간결한 문장
-- 필요하면 소제목/항목 나열 사용
+### Format
+- Within one A4 page, English
+- Natural and concise sentences
+- Use subheadings or bullet points if helpful
 
 [End of Instruction]
 """

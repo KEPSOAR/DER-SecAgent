@@ -1,4 +1,4 @@
-# 보안 스크립트 평가를 위한 Agent-as-a-Judge 구현
+# Agent-as-a-Judge implementation for evaluating security scripts
 import os
 import sys
 import tempfile
@@ -7,20 +7,20 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 
-# Agent-as-a-Judge 라이브러리 경로 추가
+# Add Agent-as-a-Judge library path
 sys.path.append('/root/Multi_AI_Agent/agent-as-a-judge')
 
-# Ollama 연결 및 타임아웃 설정 - 강화된 설정
-os.environ["LITELLM_REQUEST_TIMEOUT"] = "600"  # 10분으로 증가
+# Ollama connection and timeout configuration — reinforced settings
+os.environ["LITELLM_REQUEST_TIMEOUT"] = "600"  # increased to 10 minutes
 os.environ["OLLAMA_REQUEST_TIMEOUT"] = "600"
 os.environ["LITELLM_DROP_PARAMS"] = "true"
-os.environ["LITELLM_LOG"] = "ERROR"  # 로그 레벨 조정
+os.environ["LITELLM_LOG"] = "ERROR"  # adjust log level
 
-# LiteLLM 타임아웃 설정 - 환경변수만 사용
-print("⚠️ 환경변수로 타임아웃 설정: 600초")
+# LiteLLM timeout — configured via environment variables only
+print("⚠️ Timeout configured via environment variables: 600 seconds")
 
-# Ollama 모델 설정 (더 가벼운 모델로 변경)
-DEFAULT_OLLAMA_MODEL = "llama3.2:1b"  # 더 빠른 모델 사용
+# Ollama model (use a lighter/faster model)
+DEFAULT_OLLAMA_MODEL = "llama3.2:1b"  # faster model
 DEFAULT_MODEL = os.getenv("DEFAULT_LLM", f"ollama/{DEFAULT_OLLAMA_MODEL}")
 
 from agent_as_a_judge.agent import JudgeAgent
@@ -29,12 +29,12 @@ from kepsoar.graph.states import soar_input, attack_type
 
 @dataclass
 class SecurityJudgeResult:
-    """보안 스크립트 평가 결과 (1-10점 스케일)"""
-    syntax_score: int = 0  # 1-10점
-    security_score: int = 0  # 1-10점
-    safety_score: int = 0  # 1-10점
-    optimization_score: int = 0  # 1-10점
-    overall_score: float = 0.0  # 평균 점수
+    """Security script evaluation result (1–10 scale)"""
+    syntax_score: int = 0  # 1–10 points
+    security_score: int = 0  # 1–10 points
+    safety_score: int = 0  # 1–10 points
+    optimization_score: int = 0  # 1–10 points
+    overall_score: float = 0.0  # average score
     syntax_reason: str = ""
     security_reason: str = ""
     safety_reason: str = ""
@@ -45,32 +45,32 @@ class SecurityJudgeResult:
 
     @property
     def syntax_satisfied(self) -> bool:
-        """하위 호환성을 위한 속성"""
+        """Property kept for backward compatibility"""
         return self.syntax_score >= 6
 
     @property
     def security_satisfied(self) -> bool:
-        """하위 호환성을 위한 속성"""
+        """Property kept for backward compatibility"""
         return self.security_score >= 6
 
     @property
     def safety_satisfied(self) -> bool:
-        """하위 호환성을 위한 속성"""
+        """Property kept for backward compatibility"""
         return self.safety_score >= 6
 
     @property
     def optimization_satisfied(self) -> bool:
-        """하위 호환성을 위한 속성"""
+        """Property kept for backward compatibility"""
         return self.optimization_score >= 6
 
     @property
     def overall_satisfied(self) -> bool:
-        """하위 호환성을 위한 속성"""
+        """Property kept for backward compatibility"""
         return self.overall_score >= 6.0
 
 class SecurityScriptJudge:
     """
-    공식 Agent-as-a-Judge 프레임워크를 사용한 보안 스크립트 평가 시스템
+    Security script evaluation system using the official Agent-as-a-Judge framework
     """
 
     def __init__(self):
@@ -78,62 +78,62 @@ class SecurityScriptJudge:
         self.judge_dir = self.temp_dir / "judge"
         self.judge_dir.mkdir(parents=True, exist_ok=True)
 
-        # 환경변수 설정 확인 및 기본값 설정
+        # Check environment variables and set defaults
         if not os.getenv("DEFAULT_LLM"):
             os.environ["DEFAULT_LLM"] = DEFAULT_MODEL
         if not os.getenv("OPENAI_API_KEY"):
             os.environ["OPENAI_API_KEY"] = "not-needed-for-ollama"
 
-        # 공격 유형별 특화 평가 기준 (1-10점 스케일)
+        # Attack-specific evaluation criteria (1–10 scale)
         self.attack_criteria = {
             attack_type.DoS: {
-                "syntax": "iptables 명령어 문법의 정확성을 1-10점으로 평가하세요. (1: 심각한 구문 오류, 5: 기본 문법은 맞음, 10: 완벽한 문법과 구조)",
-                "security": "DoS 공격 차단 효과성을 1-10점으로 평가하세요. (1: 전혀 효과 없음, 5: 기본적 차단, 10: 완벽한 DoS 방어)",
-                "safety": "정상 트래픽 보호와 서비스 안정성을 1-10점으로 평가하세요. (1: 서비스 장애 위험, 5: 기본 안전성, 10: 완벽한 안전성)",
-                "optimization": "규칙의 효율성과 최적화를 1-10점으로 평가하세요. (1: 매우 비효율적, 5: 기본적 효율성, 10: 최적화된 구조)"
+                "syntax": "Evaluate iptables command syntax correctness on a 1–10 scale. (1: severe syntax errors, 5: basic syntax correct, 10: perfect syntax and structure)",
+                "security": "Evaluate DoS mitigation effectiveness on a 1–10 scale. (1: ineffective, 5: basic mitigation, 10: excellent DoS defense)",
+                "safety": "Evaluate protection of legitimate traffic and service stability on a 1–10 scale. (1: high outage risk, 5: basic safety, 10: excellent safety)",
+                "optimization": "Evaluate rule efficiency and optimization on a 1–10 scale. (1: very inefficient, 5: basic efficiency, 10: highly optimized)"
             },
             attack_type.Probe: {
-                "syntax": "iptables 명령어 문법의 정확성을 1-10점으로 평가하세요. (1: 심각한 구문 오류, 5: 기본 문법은 맞음, 10: 완벽한 문법과 구조)",
-                "security": "Probe 공격 차단 효과성을 1-10점으로 평가하세요. (1: 전혀 효과 없음, 5: 기본적 차단, 10: 완벽한 스캐닝 방어)",
-                "safety": "합법적 서비스 접근 보호를 1-10점으로 평가하세요. (1: 정상 서비스 차단, 5: 기본 안전성, 10: 완벽한 서비스 보호)",
-                "optimization": "규칙의 효율성과 최적화를 1-10점으로 평가하세요. (1: 매우 비효율적, 5: 기본적 효율성, 10: 최적화된 구조)"
+                "syntax": "Evaluate iptables command syntax correctness on a 1–10 scale. (1: severe syntax errors, 5: basic syntax correct, 10: perfect syntax and structure)",
+                "security": "Evaluate Probe/scanning mitigation effectiveness on a 1–10 scale. (1: ineffective, 5: basic mitigation, 10: excellent scanning defense)",
+                "safety": "Evaluate protection of legitimate service access on a 1–10 scale. (1: blocks normal services, 5: basic safety, 10: excellent service protection)",
+                "optimization": "Evaluate rule efficiency and optimization on a 1–10 scale. (1: very inefficient, 5: basic efficiency, 10: highly optimized)"
             },
             attack_type.BruteForce: {
-                "syntax": "iptables 명령어 문법의 정확성을 1-10점으로 평가하세요. (1: 심각한 구문 오류, 5: 기본 문법은 맞음, 10: 완벽한 문법과 구조)",
-                "security": "무차별 대입 공격 차단 효과성을 1-10점으로 평가하세요. (1: 전혀 효과 없음, 5: 기본적 차단, 10: 완벽한 브루트포스 방어)",
-                "safety": "정상 사용자 접근 보호를 1-10점으로 평가하세요. (1: 정상 사용자 차단, 5: 기본 안전성, 10: 완벽한 사용자 보호)",
-                "optimization": "Rate limiting 규칙의 효율성을 1-10점으로 평가하세요. (1: 매우 비효율적, 5: 기본적 효율성, 10: 최적화된 구조)"
+                "syntax": "Evaluate iptables command syntax correctness on a 1–10 scale. (1: severe syntax errors, 5: basic syntax correct, 10: perfect syntax and structure)",
+                "security": "Evaluate brute-force mitigation effectiveness on a 1–10 scale. (1: ineffective, 5: basic mitigation, 10: excellent brute-force defense)",
+                "safety": "Evaluate protection of legitimate user access on a 1–10 scale. (1: blocks legitimate users, 5: basic safety, 10: excellent user protection)",
+                "optimization": "Evaluate rate-limiting rule efficiency on a 1–10 scale. (1: very inefficient, 5: basic efficiency, 10: highly optimized)"
             },
             attack_type.MITM: {
-                "syntax": "iptables 명령어 문법의 정확성을 1-10점으로 평가하세요. (1: 심각한 구문 오류, 5: 기본 문법은 맞음, 10: 완벽한 문법과 구조)",
-                "security": "중간자 공격 방어 효과성을 1-10점으로 평가하세요. (1: 전혀 효과 없음, 5: 기본적 방어, 10: 완벽한 MITM 방어)",
-                "safety": "합법적 연결 보호를 1-10점으로 평가하세요. (1: 정상 연결 차단, 5: 기본 안전성, 10: 완벽한 연결 보호)",
-                "optimization": "보안 규칙의 효율성을 1-10점으로 평가하세요. (1: 매우 비효율적, 5: 기본적 효율성, 10: 최적화된 구조)"
+                "syntax": "Evaluate iptables command syntax correctness on a 1–10 scale. (1: severe syntax errors, 5: basic syntax correct, 10: perfect syntax and structure)",
+                "security": "Evaluate MITM defense effectiveness on a 1–10 scale. (1: ineffective, 5: basic defense, 10: excellent MITM defense)",
+                "safety": "Evaluate protection of legitimate connections on a 1–10 scale. (1: blocks normal connections, 5: basic safety, 10: excellent connection protection)",
+                "optimization": "Evaluate rule efficiency and optimization on a 1–10 scale. (1: very inefficient, 5: basic efficiency, 10: highly optimized)"
             },
             attack_type.R2L: {
-                "syntax": "iptables 명령어 문법의 정확성을 1-10점으로 평가하세요. (1: 심각한 구문 오류, 5: 기본 문법은 맞음, 10: 완벽한 문법과 구조)",
-                "security": "원격 접근 공격 차단 효과성을 1-10점으로 평가하세요. (1: 전혀 효과 없음, 5: 기본적 차단, 10: 완벽한 R2L 방어)",
-                "safety": "합법적 원격 접근 보호를 1-10점으로 평가하세요. (1: 정상 접근 차단, 5: 기본 안전성, 10: 완벽한 접근 보호)",
-                "optimization": "접근 제어 규칙의 효율성을 1-10점으로 평가하세요. (1: 매우 비효율적, 5: 기본적 효율성, 10: 최적화된 구조)"
+                "syntax": "Evaluate iptables command syntax correctness on a 1–10 scale. (1: severe syntax errors, 5: basic syntax correct, 10: perfect syntax and structure)",
+                "security": "Evaluate remote access attack mitigation effectiveness (R2L) on a 1–10 scale. (1: ineffective, 5: basic mitigation, 10: excellent defense)",
+                "safety": "Evaluate protection of legitimate remote access on a 1–10 scale. (1: blocks normal access, 5: basic safety, 10: excellent protection)",
+                "optimization": "Evaluate access control rule efficiency on a 1–10 scale. (1: very inefficient, 5: basic efficiency, 10: highly optimized)"
             },
             attack_type.U2R: {
-                "syntax": "iptables 명령어 문법의 정확성을 1-10점으로 평가하세요. (1: 심각한 구문 오류, 5: 기본 문법은 맞음, 10: 완벽한 문법과 구조)",
-                "security": "권한 상승 공격 방어 효과성을 1-10점으로 평가하세요. (1: 전혀 효과 없음, 5: 기본적 방어, 10: 완벽한 U2R 방어)",
-                "safety": "정상적 관리자 접근 보호를 1-10점으로 평가하세요. (1: 관리자 접근 차단, 5: 기본 안전성, 10: 완벽한 관리자 보호)",
-                "optimization": "권한별 접근 제어의 효율성을 1-10점으로 평가하세요. (1: 매우 비효율적, 5: 기본적 효율성, 10: 최적화된 구조)"
+                "syntax": "Evaluate iptables command syntax correctness on a 1–10 scale. (1: severe syntax errors, 5: basic syntax correct, 10: perfect syntax and structure)",
+                "security": "Evaluate privilege escalation (U2R) defense effectiveness on a 1–10 scale. (1: ineffective, 5: basic defense, 10: excellent U2R defense)",
+                "safety": "Evaluate protection of legitimate admin access on a 1–10 scale. (1: blocks admin access, 5: basic safety, 10: excellent protection)",
+                "optimization": "Evaluate efficiency of role/privilege-based access controls on a 1–10 scale. (1: very inefficient, 5: basic efficiency, 10: highly optimized)"
             }
         }
 
     def create_temp_workspace(self, script: str, state: soar_input) -> Path:
-        """평가를 위한 임시 워크스페이스 생성"""
+        """Create a temporary workspace for evaluation"""
         workspace_dir = self.temp_dir / "workspace"
         workspace_dir.mkdir(exist_ok=True)
 
-        # 스크립트 파일 생성 (.txt 형식으로 변경하여 Agent-as-a-Judge가 읽을 수 있도록)
+        # Create script file (.txt so Agent-as-a-Judge can read it)
         script_file = workspace_dir / "security_script.txt"
         script_file.write_text(f"# Generated security script\n{script}")
 
-        # 컨텍스트 정보 파일 생성
+        # Create context file
         context_file = workspace_dir / "context.json"
         context_data = {
             "attack_type": state["attack_type"].value,
@@ -146,7 +146,7 @@ class SecurityScriptJudge:
         }
         context_file.write_text(json.dumps(context_data, indent=2))
 
-        # README 파일 생성
+        # Create README file
         readme_file = workspace_dir / "README.md"
         readme_content = f"""# Security Script Evaluation
 
@@ -162,19 +162,19 @@ The iptables security script to be evaluated.
 
 ## Evaluation Criteria (1-10 point scale)
 This script will be evaluated on:
-1. Syntax correctness (1-10점)
-2. Security effectiveness (1-10점)
-3. Safety impact (1-10점)
-4. Optimization level (1-10점)
+1. Syntax correctness (1–10)
+2. Security effectiveness (1–10)
+3. Safety impact (1–10)
+4. Optimization level (1–10)
 
-Please provide scores in format: "점수: X점"
+Please provide scores in the format: "Score: X"
 """
         readme_file.write_text(readme_content)
 
         return workspace_dir
 
     def create_instance_file(self, script: str, state: soar_input) -> Path:
-        """평가 인스턴스 파일 생성"""
+        """Create evaluation instance file"""
         attack_type_val = state["attack_type"]
         criteria = self.attack_criteria.get(attack_type_val, self.attack_criteria[attack_type.DoS])
 
@@ -183,19 +183,19 @@ Please provide scores in format: "점수: X점"
             "query": f"Evaluate the security script for {attack_type_val.value} attack mitigation using 1-10 point scale",
             "requirements": [
                 {
-                    "criteria": f"문법 평가: {criteria['syntax']} 반드시 '점수: X점' 형식으로 답변하세요.",
+                    "criteria": f"Syntax evaluation: {criteria['syntax']} Answer strictly in the format 'Score: X'.",
                     "category": "syntax"
                 },
                 {
-                    "criteria": f"보안 평가: {criteria['security']} 반드시 '점수: X점' 형식으로 답변하세요.",
+                    "criteria": f"Security evaluation: {criteria['security']} Answer strictly in the format 'Score: X'.",
                     "category": "security"
                 },
                 {
-                    "criteria": f"안전성 평가: {criteria['safety']} 반드시 '점수: X점' 형식으로 답변하세요.",
+                    "criteria": f"Safety evaluation: {criteria['safety']} Answer strictly in the format 'Score: X'.",
                     "category": "safety"
                 },
                 {
-                    "criteria": f"최적화 평가: {criteria['optimization']} 반드시 '점수: X점' 형식으로 답변하세요.",
+                    "criteria": f"Optimization evaluation: {criteria['optimization']} Answer strictly in the format 'Score: X'.",
                     "category": "optimization"
                 }
             ]
@@ -207,23 +207,23 @@ Please provide scores in format: "점수: X점"
 
     def judge_script(self, script: str, state: soar_input) -> SecurityJudgeResult:
         """
-        공식 Agent-as-a-Judge를 사용한 보안 스크립트 평가
+        Security script evaluation using the official Agent-as-a-Judge
         """
         try:
-            # 임시 워크스페이스 및 인스턴스 생성
+            # Create temporary workspace and instance
             workspace_dir = self.create_temp_workspace(script, state)
             instance_file = self.create_instance_file(script, state)
 
-            # Agent-as-a-Judge 설정
+            # Agent-as-a-Judge configuration
             config = AgentConfig(
                 include_dirs=[""],
                 exclude_dirs=["__pycache__", ".git"],
                 exclude_files=[".DS_Store"],
-                setting="gray_box",  # 코드 접근 가능
-                planning="efficient (no planning)"  # 효율적인 평가
+                setting="gray_box",  # code accessible
+                planning="efficient (no planning)"  # efficient evaluation
             )
 
-            # Judge Agent 생성 및 평가 실행
+            # Create Judge Agent and run evaluation
             judge = JudgeAgent(
                 workspace=workspace_dir,
                 instance=instance_file,
@@ -231,43 +231,43 @@ Please provide scores in format: "점수: X점"
                 config=config
             )
 
-            # Judge의 LLM 인스턴스에 타임아웃 설정 강화
+            # Strengthen timeout configuration on Judge's LLM instance
             if hasattr(judge, 'llm'):
                 if hasattr(judge.llm, 'llm_timeout'):
-                    judge.llm.llm_timeout = 600  # 10분 타임아웃
+                    judge.llm.llm_timeout = 600  # 10-minute timeout
                 if hasattr(judge.llm, 'timeout'):
                     judge.llm.timeout = 600
                 if hasattr(judge.llm, 'request_timeout'):
                     judge.llm.request_timeout = 600
-                # completion 함수 재생성으로 타임아웃 강제 적용
+                # Force apply timeouts by re-initializing completion function
                 if hasattr(judge.llm, '_initialize_completion_function'):
                     judge.llm.llm_timeout = 600
                     judge.llm._initialize_completion_function()
 
-            # 평가 실행
+            # Run evaluation
             judge.judge_anything()
 
-            # 결과 분석
+            # Analyze results
             result = self._analyze_judge_results(judge.judge_stats)
 
             return result
 
         except Exception as e:
-            print(f"Judge 평가 중 오류 발생: {e}")
+            print(f"Error during Judge evaluation: {e}")
             return SecurityJudgeResult(
-                detailed_feedback=f"평가 중 오류 발생: {str(e)}"
+                detailed_feedback=f"Error during evaluation: {str(e)}"
             )
         finally:
-            # 임시 파일 정리
+            # Clean up temporary files
             self._cleanup_temp_files()
 
     def _analyze_judge_results(self, judge_stats: List[Dict]) -> SecurityJudgeResult:
-        """Judge 평가 결과 분석 (1-10점 스케일)"""
+        """Analyze Judge results (1–10 scale)"""
         import re
 
         result = SecurityJudgeResult()
 
-        # 각 카테고리별 점수와 이유 저장
+        # Store scores and reasons per category
         category_scores = {}
         category_reasons = {}
         total_cost = 0.0
@@ -279,31 +279,28 @@ Please provide scores in format: "점수: X점"
             satisfied = stat["satisfied"]
             llm_stats = stat.get("llm_stats", {})
 
-            # LLM 응답에서 점수 추출
+            # Extract score from LLM response
             reason_text = ""
             if isinstance(llm_stats.get("reason"), list) and llm_stats["reason"]:
                 reason_text = str(llm_stats["reason"][0])
             elif isinstance(llm_stats.get("reason"), str):
                 reason_text = llm_stats["reason"]
 
-            # 카테고리 결정
-            if "문법" in criteria or "syntax" in criteria.lower():
+            # Decide category
+            if "syntax" in criteria.lower():
                 category = "syntax"
-            elif "보안" in criteria or "security" in criteria.lower():
+            elif "security" in criteria.lower():
                 category = "security"
-            elif "안전" in criteria or "safety" in criteria.lower():
+            elif "safety" in criteria.lower():
                 category = "safety"
-            elif "최적화" in criteria or "optimization" in criteria.lower():
+            elif "optimization" in criteria.lower():
                 category = "optimization"
             else:
                 category = "general"
 
-            # 점수 추출 (다양한 패턴 시도)
+            # Extract score (try multiple patterns)
             score = 0
             score_patterns = [
-                r"점수[:\s]*(\d+)점",
-                r"(\d+)점",
-                r"점수[:\s]*(\d+)",
                 r"Score[:\s]*(\d+)",
                 r"rating[:\s]*(\d+)",
                 r"(\d+)/10",
@@ -321,33 +318,33 @@ Please provide scores in format: "점수: X점"
                     except (ValueError, IndexError):
                         continue
 
-            # 점수를 찾지 못한 경우 satisfied 여부로 추정
+            # If no explicit score found, infer from 'satisfied'
             if score == 0:
                 score = 7 if satisfied else 3
 
             category_scores[category] = score
             category_reasons[category] = reason_text
 
-            # 비용 및 시간 누적
+            # Accumulate cost and time
             total_cost += llm_stats.get("cost", 0.0)
             total_time += llm_stats.get("inference_time", 0.0)
 
-            # 피드백 수집
-            feedback_parts.append(f"**{category.upper()}**: {score}점/10점\n{reason_text}")
+            # Collect feedback
+            feedback_parts.append(f"**{category.upper()}**: {score}/10\n{reason_text}")
 
-        # 결과에 점수 설정
+        # Set scores to result
         result.syntax_score = category_scores.get("syntax", 0)
         result.security_score = category_scores.get("security", 0)
         result.safety_score = category_scores.get("safety", 0)
         result.optimization_score = category_scores.get("optimization", 0)
 
-        # 개별 이유 설정
-        result.syntax_reason = category_reasons.get("syntax", "평가 없음")
-        result.security_reason = category_reasons.get("security", "평가 없음")
-        result.safety_reason = category_reasons.get("safety", "평가 없음")
-        result.optimization_reason = category_reasons.get("optimization", "평가 없음")
+        # Set individual reasons
+        result.syntax_reason = category_reasons.get("syntax", "No evaluation")
+        result.security_reason = category_reasons.get("security", "No evaluation")
+        result.safety_reason = category_reasons.get("safety", "No evaluation")
+        result.optimization_reason = category_reasons.get("optimization", "No evaluation")
 
-        # 전체 평균 점수 계산
+        # Compute overall average score
         valid_scores = [score for score in [result.syntax_score, result.security_score,
                                           result.safety_score, result.optimization_score] if score > 0]
         result.overall_score = sum(valid_scores) / len(valid_scores) if valid_scores else 0.0
@@ -359,14 +356,14 @@ Please provide scores in format: "점수: X점"
         return result
 
     def _cleanup_temp_files(self):
-        """임시 파일 정리"""
+        """Clean up temporary files"""
         import shutil
         try:
             if self.temp_dir.exists():
                 shutil.rmtree(self.temp_dir)
         except Exception as e:
-            print(f"임시 파일 정리 중 오류: {e}")
+            print(f"Error while cleaning up temporary files: {e}")
 
-# 싱글톤 인스턴스
+# Singleton instance
 security_judge = SecurityScriptJudge()
 

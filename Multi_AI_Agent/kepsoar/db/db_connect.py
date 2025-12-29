@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Supabase 연결 정보
+# Supabase connection info
 DB_USER = os.getenv("user")
 DB_PASSWORD = os.getenv("password")
 DB_HOST = os.getenv("host")
@@ -12,7 +12,7 @@ DB_PORT = os.getenv("port", "5432")
 DB_NAME = os.getenv("dbname")
 
 def get_connection():
-    """Supabase PostgreSQL 데이터베이스 연결을 반환합니다."""
+    """Return a Supabase PostgreSQL database connection."""
     try:
         conn = psycopg2.connect(
             host=DB_HOST,
@@ -23,16 +23,16 @@ def get_connection():
         )
         return conn
     except Exception as e:
-        print(f"데이터베이스 연결 오류: {e}")
+        print(f"Database connection error: {e}")
         return None
 
 def dict_fetchall(cursor):
-    """커서의 결과를 dictionary 리스트로 변환합니다."""
+    """Convert cursor results into a list of dictionaries."""
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 def fetch_log_storage(key: int):
-    """ID로 특정 로그를 조회합니다."""
+    """Fetch a specific log by ID."""
     conn = get_connection()
     if not conn:
         return []
@@ -45,13 +45,13 @@ def fetch_log_storage(key: int):
                 print(row)
         return result
     except Exception as e:
-        print(f"로그 조회 오류: {e}")
+        print(f"Log fetch error: {e}")
         return []
     finally:
         conn.close()
 
 def fetch_history_storage_by_key(key: int):
-    """ID로 특정 히스토리를 조회합니다."""
+    """Fetch a specific history entry by ID."""
     conn = get_connection()
     if not conn:
         return []
@@ -64,13 +64,13 @@ def fetch_history_storage_by_key(key: int):
                 print(row)
         return result
     except Exception as e:
-        print(f"히스토리 조회 오류: {e}")
+        print(f"History fetch error: {e}")
         return []
     finally:
         conn.close()
 
 def fetch_history_storage(history_type: str):
-    """공격 유형별로 최근 2개의 히스토리를 조회합니다."""
+    """Fetch the latest two history entries for the given attack type."""
     conn = get_connection()
     if not conn:
         return []
@@ -86,13 +86,13 @@ def fetch_history_storage(history_type: str):
                 print(row)
         return result
     except Exception as e:
-        print(f"히스토리 조회 오류: {e}")
+        print(f"History fetch error: {e}")
         return []
     finally:
         conn.close()
 
 def insert_log_entry():
-    """새로운 로그 엔트리를 삽입합니다."""
+    """Insert a new log entry."""
     conn = get_connection()
     if not conn:
         return False
@@ -151,14 +151,14 @@ def insert_log_entry():
             print("Log entry inserted successfully.")
             return True
     except Exception as e:
-        print(f"로그 삽입 오류: {e}")
+        print(f"Log insert error: {e}")
         conn.rollback()
         return False
     finally:
         conn.close()
 
 def insert_history_entry():
-    """새로운 히스토리 엔트리를 삽입합니다."""
+    """Insert a new history entry."""
     conn = get_connection()
     if not conn:
         return False
@@ -226,14 +226,14 @@ def insert_history_entry():
             print("Probe log entry inserted successfully.")
             return True
     except Exception as e:
-        print(f"히스토리 삽입 오류: {e}")
+        print(f"History insert error: {e}")
         conn.rollback()
         return False
     finally:
         conn.close()
 
 def fetch_all_logs():
-    """모든 히스토리 로그를 조회합니다."""
+    """Fetch all history logs."""
     conn = get_connection()
     if not conn:
         return []
@@ -246,7 +246,7 @@ def fetch_all_logs():
                 print(row)
         return rows
     except Exception as e:
-        print(f"모든 로그 조회 오류: {e}")
+        print(f"All logs fetch error: {e}")
         return []
     finally:
         conn.close()

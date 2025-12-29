@@ -1,5 +1,5 @@
 # states.py
-from typing_extensions import TypedDict, NotRequired  # ✅ NotRequired 추가
+from typing_extensions import TypedDict, NotRequired  # ✅ Add NotRequired
 
 from enum import Enum, unique
 from datetime import datetime
@@ -59,7 +59,7 @@ class soar_input(TypedDict):
     script: str
     script_engineering: script_engineering_type
 
-    # ✅ Verifier 관련 (호환성 위해 NotRequired)
+    # ✅ Verifier fields (NotRequired for backward compatibility)
     script_verify_attempts: NotRequired[int]          # default 0
     script_verified: NotRequired[bool]               # last verification result
     script_verifier_feedback: NotRequired[str]        # critique / fix guidance
@@ -87,7 +87,7 @@ class caution_eval_state(TypedDict):
     script: str
     caution: bool
 
-    # ✅ (선택) 검증 메타를 downstream에 남기고 싶으면
+    # ✅ (Optional) keep verification metadata for downstream
     script_verified: NotRequired[bool]
     script_verifier_feedback: NotRequired[str]
 
@@ -114,7 +114,7 @@ class report_state(TypedDict):
     script: str
     report: str
 
-    # ✅ Verifier 관련 (report 검증)
+    # ✅ Verifier fields (report verification)
     report_verify_attempts: NotRequired[int]
     report_verified: NotRequired[bool]
     report_verifier_feedback: NotRequired[str]
